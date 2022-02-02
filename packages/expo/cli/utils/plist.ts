@@ -1,12 +1,10 @@
 import plist from '@expo/plist';
-// @ts-ignore
 import binaryPlist from 'bplist-parser';
 import fs from 'fs';
 
+// @ts-ignore
 const CHAR_CHEVRON_OPEN = 60;
 const CHAR_B_LOWER = 98;
-// .mobileprovision
-// const CHAR_ZERO = 30;
 
 export async function parseBinaryPlistAsync(plistPath: string) {
   return parsePlistBuffer(await fs.promises.readFile(plistPath));

@@ -49,7 +49,7 @@ export type StartWebpackOptions = {
   forceManifestType: 'classic' | 'expo-updates';
 };
 
-let devServerResults: WebpackDevServerResults | null = null;
+let instance: WebpackDevServerResults | null = null;
 
 // A custom message websocket broadcaster used to send messages to a React Native runtime.
 let customMessageSocketBroadcaster:
@@ -106,7 +106,7 @@ export async function startAsync(
 
   server.close = (callback?: (err?: Error) => void) => {
     return originalClose((err?: Error) => {
-      devServerResults = null;
+      instance = null;
       callback?.(err);
     });
   };
@@ -114,7 +114,7 @@ export async function startAsync(
   const _host = getIpAddressAsync();
   const protocol = https ? 'https' : 'http';
 
-  devServerResults = {
+  instance = {
     // Server instance
     server,
     // URL Info
@@ -130,15 +130,15 @@ export async function startAsync(
     },
   };
 
-  return devServerResults;
+  return instance;
 }
 
 export async function stopAsync(): Promise<void> {
   await new Promise<void>((res) => {
-    if (devServerResults?.server) {
+    if (instance?.server) {
       Log.log('\u203A Stopping Webpack server');
-      devServerResults.server?.close(() => {
-        devServerResults = null;
+      instance.server?.close(() => {
+        instance = null;
         res();
       });
     } else {
@@ -151,10 +151,10 @@ export async function stopAsync(): Promise<void> {
  * Get the URL for the running instance of Webpack dev server.
  */
 export function getDevServerUrl(options: { hostType?: 'localhost' } = {}): string | null {
-  if (!devServerResults?.location) {
+  if (!instance?.location) {
     return null;
   }
-  const { location } = devServerResults;
+  const { location } = instance;
   if (options.hostType === 'localhost') {
     return `${location.protocol}://localhost:${location.port}`;
   }
@@ -251,11 +251,11 @@ export function isTargetingNative() {
 }
 
 export function getInstance() {
-  return devServerResults;
+  return instance;
 }
 
 export async function broadcastMessage(message: 'reload' | string, data?: any) {
-  if (!devServerResults?.server || !(devServerResults?.server instanceof WebpackDevServer)) {
+  if (!instance?.server || !(instance?.server instanceof WebpackDevServer)) {
     return;
   }
 
@@ -277,7 +277,7 @@ export async function broadcastMessage(message: 'reload' | string, data?: any) {
   // For now, just manually convert the value so our CLI interface can be unified.
   const hackyConvertedMessage = message === 'reload' ? 'content-changed' : message;
 
-  devServerResults.server.sockWrite(devServerResults.server.sockets, hackyConvertedMessage, data);
+  instance.server.sockWrite(instance.server.sockets, hackyConvertedMessage, data);
 }
 
 async function createNativeDevServerMiddleware(

@@ -1,4 +1,4 @@
-import stripAnsi from 'strip-ansi';
+import { stripAnsi } from '../../../utils/__tests__/utils';
 
 import PackagerLogsStream from '../PackagerLogsStream';
 

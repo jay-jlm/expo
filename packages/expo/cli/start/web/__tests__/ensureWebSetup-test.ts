@@ -1,7 +1,7 @@
 import { vol } from 'memfs';
 import path from 'path';
-import stripAnsi from 'strip-ansi';
 
+import { stripAnsi } from '../../../utils/__tests__/utils';
 import {
   createInstallCommand,
   isWebPlatformExcluded,

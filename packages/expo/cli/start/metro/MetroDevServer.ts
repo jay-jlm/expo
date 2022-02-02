@@ -28,6 +28,18 @@ export type StartOptions = {
   platforms?: ExpoConfig['platforms'];
 };
 
+let instance: {
+  server: http.Server;
+  location: {
+    url: string;
+    port: number;
+    protocol: 'http' | 'https';
+    host?: string;
+  };
+  middleware: any;
+  messageSocket: MessageSocket;
+} | null = null;
+
 /**
  * Sends a message over web sockets to any connected device,
  * does nothing when the dev server is not running.
@@ -39,8 +51,8 @@ export function broadcastMessage(
   method: 'reload' | 'devMenu' | 'sendDevCommand',
   params?: Record<string, any> | undefined
 ) {
-  if (metroDevServerInstance?.messageSocket) {
-    metroDevServerInstance.messageSocket.broadcast(method, params);
+  if (instance?.messageSocket) {
+    instance.messageSocket.broadcast(method, params);
   }
 }
 
@@ -57,7 +69,7 @@ async function resolvePortAsync(
   }
 }
 export function getInstance() {
-  return metroDevServerInstance;
+  return instance;
 }
 
 export async function startAsync(
@@ -105,7 +117,7 @@ export async function startAsync(
 
   middleware.use(LoadingPageHandler.getLoadingPageHandler(projectRoot));
 
-  metroDevServerInstance = {
+  instance = {
     server,
     location: {
       // The port is the main thing we want to send back.
@@ -119,25 +131,13 @@ export async function startAsync(
     middleware,
     messageSocket,
   };
-  return metroDevServerInstance;
+  return instance;
 }
-
-let metroDevServerInstance: {
-  server: http.Server;
-  location: {
-    url: string;
-    port: number;
-    protocol: 'http' | 'https';
-    host?: string;
-  };
-  middleware: any;
-  messageSocket: MessageSocket;
-} | null = null;
 
 export async function stopAsync() {
   return new Promise<void>((resolve, reject) => {
-    if (metroDevServerInstance?.server) {
-      metroDevServerInstance.server.close((error) => {
+    if (instance?.server) {
+      instance.server.close((error) => {
         if (error) {
           reject(error);
         } else {

@@ -41,7 +41,6 @@ export async function printDevServerInfoAsync(
 
       printQRCode(url);
       Log.log(printItem(`Metro waiting on ${chalk.underline(url)}`));
-      // Log.newLine();
       // TODO: if development build, change this message!
       Log.log(printItem(`Scan the QR code above with Expo Go (Android) or the Camera app (iOS)`));
     } catch (error) {

@@ -1,9 +1,9 @@
 import { ExpoUpdatesManifest, getConfig } from '@expo/config';
 import { Updates } from '@expo/config-plugins';
 import { JSONObject } from '@expo/json-file';
+import assert from 'assert';
 import express from 'express';
 import http from 'http';
-import nullthrows from 'nullthrows';
 import { parse } from 'url';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -114,9 +114,12 @@ export async function getManifestResponseAsync({
   const easProjectId = expoConfig.extra?.eas?.projectId;
   const shouldUseAnonymousManifest = await shouldUseAnonymousManifestAsync(easProjectId);
   const userAnonymousIdentifier = await UserSettings.getAnonymousIdentifierAsync();
+  if (!shouldUseAnonymousManifest) {
+    assert(easProjectId);
+  }
   const scopeKey = shouldUseAnonymousManifest
     ? `@${ANONYMOUS_USERNAME}/${expoConfig.slug}-${userAnonymousIdentifier}`
-    : await getScopeKeyForProjectIdAsync(nullthrows(easProjectId));
+    : await getScopeKeyForProjectIdAsync(easProjectId);
 
   const expoUpdatesManifest = {
     id: uuidv4(),

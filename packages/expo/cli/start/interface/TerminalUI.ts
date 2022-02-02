@@ -11,7 +11,7 @@ import * as Simulator from '../ios/Simulator';
 import { ensureWebSupportSetupAsync } from '../web/ensureWebSetup';
 import * as Webpack from '../webpack/Webpack';
 import * as WebpackDevServer from '../webpack/WebpackDevServer';
-import { printHelp, printUsage, StartOptions } from './commandsTable';
+import { BLT, printHelp, printUsage, StartOptions } from './commandsTable';
 import {
   openJsInspectorAsync,
   openMoreToolsAsync,
@@ -20,12 +20,9 @@ import {
   toggleDevMenu,
 } from './interactiveActions';
 
-// import { loginOrRegisterIfLoggedOutAsync } from '../auth/accounts';
 const CTRL_C = '\u0003';
 const CTRL_D = '\u0004';
 const CTRL_L = '\u000C';
-
-const BLT = `\u203A`;
 
 export async function startAsync(projectRoot: string, options: StartOptions) {
   const { stdin } = process;
@@ -59,15 +56,6 @@ export async function startAsync(projectRoot: string, options: StartOptions) {
       startWaitingForCommand();
     }
   });
-
-  // setInteractiveAuthenticationCallback(async () => {
-  //   stopWaitingForCommand();
-  //   try {
-  //     return await loginOrRegisterIfLoggedOutAsync();
-  //   } finally {
-  //     startWaitingForCommand();
-  //   }
-  // });
 
   await printDevServerInfoAsync(projectRoot, options);
 
